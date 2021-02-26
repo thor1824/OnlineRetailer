@@ -1,10 +1,11 @@
-﻿using Domain.Storage;
+﻿using Domain.Model.ServiceFacades;
+using Domain.Storage;
 using Domane.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ProductApi.Data
+namespace Micro.ProductDAOService
 {
     public class ProductRepository : IRepository<Product>
     {

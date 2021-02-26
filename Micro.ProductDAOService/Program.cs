@@ -1,11 +1,12 @@
 ﻿using Domain.Model.ServiceFacades;
 using Domain.Storage;
 using Domane.Model;
+using Micro.ProductDAOService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Micro.CustomerDAOService
+namespace ProductDAOService
 {
     class Program
     {
@@ -13,7 +14,6 @@ namespace Micro.CustomerDAOService
         {
             var sp = BuildService();
 
-            // Initialize DB
             var dbContext = sp.GetService<RetailContext>();
             var dbInitializer = sp.GetService<IDbInitializer>();
             dbInitializer.Initialize(dbContext);
@@ -24,7 +24,7 @@ namespace Micro.CustomerDAOService
         private static ServiceProvider BuildService()
         {
             var services = new ServiceCollection();
-            services.AddScoped<IRepository<Customer>, CustomerRepository>();
+            services.AddScoped<IRepository<Product>, ProductRepository>();
 
             services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB"));
             services.AddTransient<IDbInitializer, DbInitializer>();

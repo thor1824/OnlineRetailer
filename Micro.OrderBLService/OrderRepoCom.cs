@@ -1,35 +1,36 @@
 ﻿using Domain.Model.ServiceFacades;
 using Domane.Model;
-using Domane.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Micro.OrderBLService
 {
-    public class OrderService : IOrderService
+    public class OrderRepoCom : IRepository<Order>
     {
-        private readonly IRepository<Order> _repo;
-
-        public OrderService(IRepository<Order> repo)
-        {
-            _repo = repo;
-        }
-        public Order Add(Order order)
+        public Order Add(Order entity)
         {
             throw new NotImplementedException();
         }
 
-        public void ChangeStatus(int OrderId, OrderStatus newStatus)
+        public void Edit(Order entity)
         {
             throw new NotImplementedException();
         }
 
-        public Order Get(int orderId)
+        public Order Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IList<Order> GetAllByCustomer(int customerId)
+        public IEnumerable<Order> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(int id)
         {
             throw new NotImplementedException();
         }

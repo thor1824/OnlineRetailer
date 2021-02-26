@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Domain.Model.ServiceFacades;
+using Domane.Model;
+using Domane.Model.ServiceFacades;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Micro.ProductBLService
 {
@@ -6,7 +10,17 @@ namespace Micro.ProductBLService
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var sp = BuildService();
+
+            Console.ReadLine();
+        }
+
+        private static ServiceProvider BuildService()
+        {
+            var services = new ServiceCollection();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IRepository<Product>, ProductRepoCom>();
+            return services.BuildServiceProvider();
         }
     }
 }

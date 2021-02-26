@@ -1,12 +1,12 @@
-﻿using Domain.Storage;
+﻿using Domain.Model.ServiceFacades;
+using Domain.Storage;
 using Domane.Model;
 using Microsoft.EntityFrameworkCore;
-using ProductApi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OrderApi.Data
+namespace Micro.OrderDAOService
 {
     public class OrderRepository : IRepository<Order>
     {

@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.Storage", "DbContext
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Micro.ProductBLService", "Micro.ProductBLService\Micro.ProductBLService.csproj", "{6275729E-9667-4D19-AAA7-C51EE10686D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Micro.ProductDAOService", "ProductDAOService\Micro.ProductDAOService.csproj", "{B68BF55A-371C-474E-AAAF-D2411FDB8480}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Micro.ProductDAOService", "Micro.ProductDAOService\Micro.ProductDAOService.csproj", "{B68BF55A-371C-474E-AAAF-D2411FDB8480}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Micro.CustomerBLService", "Micro.CustomerBLService\Micro.CustomerBLService.csproj", "{61D199FB-76F8-4584-B003-4D01A0202570}"
 EndProject

@@ -1,35 +1,36 @@
 ﻿using Domain.Model.ServiceFacades;
 using Domane.Model;
-using Domane.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace Micro.CustomerBLService
+namespace Micro.ProductBLService
 {
-    public class CustomerService : ICustomerService
+    public class ProductRepoCom : IRepository<Product>
     {
-        private readonly IRepository<Customer> _repo;
-
-        public CustomerService(IRepository<Customer> repo) {
-            _repo = repo;
-        }
-        public Customer Add(Customer customer)
+        public Product Add(Product entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(int customerId)
+        public void Edit(Product entity)
         {
             throw new NotImplementedException();
         }
 
-        public Customer Get(int customerId)
+        public Product Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Customer customer)
+        public IEnumerable<Product> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(int id)
         {
             throw new NotImplementedException();
         }
