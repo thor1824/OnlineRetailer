@@ -20,46 +20,74 @@ namespace OrderApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var item = await _serv.GetAsync(id);
-            if (item == null)
+            try
             {
-                return NotFound();
+                var item = await _serv.GetAsync(id);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                return new ObjectResult(item);
             }
-            return new ObjectResult(item);
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // POST orders
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] Customer customer)
         {
-            if (customer == null)
+            try
             {
-                return BadRequest();
+                if (customer == null)
+                {
+                    return BadRequest();
+                }
+                var newCust = await _serv.AddAsync(customer);
+                return Created(newCust.CustomerId + "", newCust);
             }
-            var newCust = await _serv.AddAsync(customer);
-            return Created(newCust.CustomerId + "", newCust);
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> PutAsync([FromBody] Customer customer)
         {
-            if (customer == null)
+            try
             {
-                return BadRequest();
+                if (customer == null)
+                {
+                    return BadRequest();
+                }
+                await _serv.UpdateAsync(customer);
+                return NoContent();
             }
-            await _serv.UpdateAsync(customer);
-            return NoContent();
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest();
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+                await _serv.DeleteAsync(id);
+                return NoContent();
             }
-            await _serv.DeleteAsync(id);
-            return NoContent();
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
     }

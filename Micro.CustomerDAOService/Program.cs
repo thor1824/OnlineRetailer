@@ -80,7 +80,7 @@ namespace Micro.CustomerDAOService
             var services = new ServiceCollection();
 
             services.AddScoped<IRepository<Customer>, CustomerRepository>();
-            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB"));
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
             services.AddTransient<IDbInitializer, DbInitializer>();
             services.AddSingleton(RabbitHutch.CreateBus("host=localhost"));
 

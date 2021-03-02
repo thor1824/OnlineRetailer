@@ -30,7 +30,7 @@ namespace EasyNetQ.Custom.Serializer
         /// <inheritdoc />
         public byte[] MessageToBytes(Type messageType, object message)
         {
-            Preconditions.CheckNotNull(messageType, "messageType");
+            //Preconditions.CheckNotNull(messageType, "messageType");
 
             using var memoryStream = new MemoryStream(DefaultBufferSize);
             using (var streamWriter = new StreamWriter(memoryStream, Encoding, DefaultBufferSize, true))

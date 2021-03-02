@@ -57,7 +57,7 @@ namespace ProductDAOService
             var services = new ServiceCollection();
             
             services.AddScoped<IRepository<Product>, ProductRepository>();
-            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB"));
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
             services.AddTransient<IDbInitializer, DbInitializer>();
             services.AddSingleton(RabbitHutch.CreateBus("host=localhost"));
 

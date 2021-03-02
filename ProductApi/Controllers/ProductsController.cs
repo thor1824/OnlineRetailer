@@ -17,18 +17,35 @@ namespace ProductApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var item = await _serv.GetAsync(id);
-            if (item == null)
+            try
             {
-                return NotFound();
+                var item = await _serv.GetAsync(id);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                return Ok(item);
             }
-            return Ok(item);
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _serv.GetAllAsync());
+
+            try
+            {
+                return Ok(await _serv.GetAllAsync());
+
+            }
+            catch (System.Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
         }
 
         

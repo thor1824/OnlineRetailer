@@ -65,7 +65,7 @@ namespace Micro.OrderDAOService
             bus.Rpc.Respond<UpdateDaoRequest<Order>, UpdateDaoResponse<Order>>(async request =>
             {
                 Console.WriteLine("Update Request Recived");
-                await service.EditAsync(new Order {OrderId= request.Payload.OrderId, Status = request.Payload.Status });
+                await service.EditAsync(request.Payload);
                 return new UpdateDaoResponse<Order>();
             });
             #endregion
@@ -78,7 +78,7 @@ namespace Micro.OrderDAOService
             var bus = RabbitHutch.CreateBus("host=localhost", serviceRegister => serviceRegister.Register<ISerializer>(serviceProvider => new CustomSerializer()));
             services.AddSingleton(bus);
 
-            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB"));
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
             services.AddTransient<IDbInitializer, DbInitializer>();
             return services.BuildServiceProvider();
         }

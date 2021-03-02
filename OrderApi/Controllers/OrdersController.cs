@@ -16,35 +16,50 @@ namespace OrderApi.Controllers
             _serv = serv;
         }
 
-        
+
 
         // GET orders/5
         [HttpGet]
         [Route("[controller]/{id}")]
         public async Task<IActionResult> GetAsync(int id)
         {
-            var item = await _serv.GetAsync(id);
-            if (item == null)
+            try
             {
-                return NotFound();
+                var item = await _serv.GetAsync(id);
+                if (item == null)
+                {
+                    return NotFound();
+                }
+                return Ok(item);
             }
-            return Ok(item);
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
-        
+
         [HttpGet]
         [Route("[controller]/[action]")]
-        public async Task<IActionResult> ByCustomer([FromQuery]int customerId)
+        public async Task<IActionResult> ByCustomer([FromQuery] int customerId)
         {
-            if (customerId == 0) {
-                return BadRequest();
-            }
-
-            var items = await _serv.GetAllByCustomerAsync(customerId);
-            if (items == null)
+            try
             {
-                return NotFound();
+                if (customerId == 0)
+                {
+                    return BadRequest();
+                }
+
+                var items = await _serv.GetAllByCustomerAsync(customerId);
+                if (items == null)
+                {
+                    return NotFound();
+                }
+                return Ok(items);
             }
-            return Ok(items);
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // POST orders
@@ -52,12 +67,19 @@ namespace OrderApi.Controllers
         [Route("[controller]")]
         public async Task<IActionResult> PostAsync([FromBody] Order order)
         {
-            if (order == null)
+            try
             {
-                return BadRequest();
+                if (order == null)
+                {
+                    return BadRequest();
+                }
+                var newOrder = await _serv.AddAsync(order);
+                return Created("" + newOrder.OrderId, newOrder);
             }
-            var newOrder = await _serv.AddAsync(order);
-            return Created("" + newOrder.OrderId, newOrder);
+            catch (System.Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPut]

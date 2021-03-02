@@ -56,7 +56,7 @@ namespace Micro.OrderBLService
                 {
                     throw new Exception("Order Rejected: Product Does not exist");
                 }
-                if (prod.ItemsInStock >= line.Quantity)
+                if (prod.ItemsInStock < line.Quantity)
                 {
                     // else throw error
                     throw new Exception("Order Rejected: Product quantity too low");
