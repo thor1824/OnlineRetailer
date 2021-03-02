@@ -4,13 +4,12 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-
   <ItemGroup>
-    <PackageReference Include="RestSharp" Version="106.10.1" />
+    <PackageReference Include="EasyNetQ" Version="6.3.1" />
   </ItemGroup>
 
-
   <ItemGroup>
-    <ProjectReference Include="..\Domane.Model\Domain.Model.csproj" />
+    <ProjectReference Include="..\Domane.Model\RetailApi.Domain.Model.csproj" />
   </ItemGroup>
+
 </Project>

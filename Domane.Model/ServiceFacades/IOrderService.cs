@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Domane.Model.ServiceFacades
 {
     public interface IOrderService
     {
-        Order Get(int orderId);
+        Task<Order> GetAsync(int orderId);
 
-        IList<Order> GetAllByCustomer(int customerId);
+        Task<IEnumerable<Order>> GetAllByCustomerAsync(int customerId);
 
-        Order Add(Order order);
-        void ChangeStatus(int OrderId, OrderStatus newStatus);
+        Task<Order> AddAsync(Order order);
+        Task ChangeStatusAsync(int OrderId, OrderStatus newStatus);
     }
 }

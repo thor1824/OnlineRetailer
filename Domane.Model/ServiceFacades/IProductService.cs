@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Domane.Model.ServiceFacades
 {
     public interface IProductService
     {
-        Product Get(int productId);
+        Task<Product> GetAsync(int productId);
 
-        IList<Product> GetAll();
+        Task<IEnumerable<Product>> GetAllAsync();
     }
 }

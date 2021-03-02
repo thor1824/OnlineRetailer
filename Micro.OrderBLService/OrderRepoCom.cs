@@ -1,38 +1,61 @@
-﻿using Domain.Model.ServiceFacades;
-using Domane.Model;
+﻿using Domane.Model;
+using EasyNetQ;
+using RetailApi.Domain.Model.Messages;
+using RetailApi.Domain.Model.Messages.Specialised;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Micro.OrderBLService
 {
-    public class OrderRepoCom : IRepository<Order>
+    public class OrderRepoCom : IOrderRepository
     {
-        public Order Add(Order entity)
+        private readonly IBus _bus;
+
+        public OrderRepoCom(IBus bus)
         {
-            throw new NotImplementedException();
+            _bus = bus;
         }
 
-        public void Edit(Order entity)
+        public async Task<Order> AddAync(Order entity)
         {
-            throw new NotImplementedException();
+            var request = new CreateDaoRequest<Order>() { Payload = entity };
+            var response = await _bus.Rpc.RequestAsync<CreateDaoRequest<Order>, CreateDaoResponse<Order>>(request);
+            return response.Payload;
         }
 
-        public Order Get(int id)
+        public async Task EditAsync(Order entity)
         {
-            throw new NotImplementedException();
+            var request = new UpdateDaoRequest<Order>() { Payload = entity };
+            await _bus.Rpc.RequestAsync<UpdateDaoRequest<Order>, UpdateDaoResponse<Order>>(request);
         }
 
-        public IEnumerable<Order> GetAll()
+        public async Task<Order> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            var request = new GetDaoRequest<Order>() { Id = id };
+            var response = await _bus.Rpc.RequestAsync<GetDaoRequest<Order>, GetDaoResponse<Order>>(request);
+            return response.Payload;
         }
 
-        public void Remove(int id)
+        public async Task<IEnumerable<Order>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var request = new GetDaoRequest<IEnumerable<Order>>();
+            var response = await _bus.Rpc.RequestAsync<GetDaoRequest<IEnumerable<Order>>, GetDaoResponse<IEnumerable<Order>>>(request);
+            return response.Payload;
+        }
+
+        public async Task<IEnumerable<Order>> GetByCustomerIdAsync(int customerId)
+        {
+            var request = new ByCustomerDaoRequest() {CustomerId= customerId };
+            var response = await _bus.Rpc.RequestAsync<ByCustomerDaoRequest, ByCustomerDaoResponse>(request);
+            return response.Payload;
+        }
+
+        public async Task RemoveAsync(int id)
+        {
+            var request = new DeleteDaoRequest<Order>() { Id = id };
+            await _bus.Rpc.RequestAsync<DeleteDaoRequest<Order>, DeleteDaoRequest<Order>>(request);
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Domain.Model.ServiceFacades;
-using Domane.Model;
+﻿using Domane.Model;
+using EasyNetQ;
+using RetailApi.Domain.Model.Messages;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +12,42 @@ namespace Micro.CustomerBLService
 {
     public class CustomerRepoCom : IRepository<Customer>
     {
-        public Customer Add(Customer entity)
+        private readonly IBus _bus;
+
+        public CustomerRepoCom(IBus bus) {
+            _bus = bus;
+        }
+        public async Task<Customer> AddAync(Customer entity)
         {
-            throw new NotImplementedException();
+            var request = new CreateDaoRequest<Customer>() { Payload = entity };
+            var response = await _bus.Rpc.RequestAsync<CreateDaoRequest<Customer>, CreateDaoResponse<Customer>>(request);
+            return response.Payload;
         }
 
-        public void Edit(Customer entity)
+        public async Task EditAsync(Customer entity)
         {
-            throw new NotImplementedException();
+            var request = new UpdateDaoRequest<Customer>() { Payload = entity };
+            await _bus.Rpc.RequestAsync<UpdateDaoRequest<Customer>, UpdateDaoResponse<Customer>>(request);
         }
 
-        public Customer Get(int id)
+        public async Task<Customer> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            var request = new GetDaoRequest<Customer>() { Id = id };
+            var response = await _bus.Rpc.RequestAsync<GetDaoRequest<Customer>, GetDaoResponse<Customer>>(request);
+            return response.Payload;
         }
 
-        public IEnumerable<Customer> GetAll()
+        public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var request = new GetDaoRequest<IEnumerable<Customer>>();
+            var response = await _bus.Rpc.RequestAsync<GetDaoRequest<IEnumerable<Customer>>, GetDaoResponse<IEnumerable<Customer>>>(request);
+            return response.Payload;
         }
 
-        public void Remove(int id)
+        public async Task RemoveAsync(int id)
         {
-            throw new NotImplementedException();
+            var request = new DeleteDaoRequest<Customer>() { Id = id };
+            await _bus.Rpc.RequestAsync<DeleteDaoRequest<Customer>, DeleteDaoRequest<Customer>>(request);
         }
     }
 }

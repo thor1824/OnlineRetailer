@@ -1,7 +1,6 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
+﻿using Domane.Model.ServiceFacades;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProductApi.Controllers
 {
@@ -15,25 +14,24 @@ namespace ProductApi.Controllers
         {
             _serv = serv;
         }
-
-        // GET products
-        [HttpGet]
-        public IEnumerable<Product> Get()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(int id)
         {
-            return _serv.GetAll();
-        }
-
-        // GET products/5
-        [HttpGet("{id}", Name = "GetProduct")]
-        public IActionResult Get(int id)
-        {
-            var item = _serv.Get(id);
+            var item = await _serv.GetAsync(id);
             if (item == null)
             {
                 return NotFound();
             }
-            return new ObjectResult(item);
+            return Ok(item);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _serv.GetAllAsync());
+        }
+
+        
 
         //// POST products
         //[HttpPost]

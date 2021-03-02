@@ -1,4 +1,5 @@
 using Domane.Model.ServiceFacades;
+using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +16,7 @@ namespace CustomerAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ICustomerService, CustomerCommunicator>();
+            services.AddSingleton(RabbitHutch.CreateBus("host=localhost"));
 
             services.AddControllers();
         }
@@ -31,10 +33,7 @@ namespace CustomerAPI
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllers();
             });
         }
     }

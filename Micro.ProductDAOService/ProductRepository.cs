@@ -1,49 +1,50 @@
-﻿using Domain.Model.ServiceFacades;
-using Domain.Storage;
+﻿using Domain.Storage;
 using Domane.Model;
 using Microsoft.EntityFrameworkCore;
+using RetailApi.Domain.Model.ServiceFacades;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Micro.ProductDAOService
 {
     public class ProductRepository : IRepository<Product>
     {
-        private readonly RetailContext db;
+        private readonly RetailContext _ctx;
 
         public ProductRepository(RetailContext context)
         {
-            db = context;
+            _ctx = context;
         }
 
-        Product IRepository<Product>.Add(Product entity)
+        public async Task EditAsync(Product entity)
         {
-            var newProduct = db.Products.Add(entity).Entity;
-            db.SaveChanges();
-            return newProduct;
+            _ctx.Entry(entity).State = EntityState.Modified;
+            await _ctx.SaveChangesAsync();
         }
 
-        void IRepository<Product>.Edit(Product entity)
+        public async Task<Product> GetAsync(int id)
         {
-            db.Entry(entity).State = EntityState.Modified;
-            db.SaveChanges();
+            return await _ctx.Products.AsNoTracking().FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
-        Product IRepository<Product>.Get(int id)
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return db.Products.FirstOrDefault(p => p.ProductId == id);
+            return await _ctx.Products.AsNoTracking().ToListAsync();
         }
 
-        IEnumerable<Product> IRepository<Product>.GetAll()
+        public async Task RemoveAsync(int id)
         {
-            return db.Products.ToList();
+            var product = await _ctx.Products.FirstOrDefaultAsync(p => p.ProductId == id);
+            _ctx.Products.Remove(product);
+            await _ctx.SaveChangesAsync();
         }
-
-        void IRepository<Product>.Remove(int id)
+        
+        public async Task<Product> AddAync(Product entity)
         {
-            var product = db.Products.FirstOrDefault(p => p.ProductId == id);
-            db.Products.Remove(product);
-            db.SaveChanges();
+            var newEntry = await _ctx.Products.AddAsync(entity);
+            await _ctx.SaveChangesAsync();
+            return newEntry.Entity;
         }
     }
 }

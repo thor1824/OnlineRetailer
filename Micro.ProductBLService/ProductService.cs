@@ -1,9 +1,10 @@
-﻿using Domain.Model.ServiceFacades;
-using Domane.Model;
+﻿using Domane.Model;
 using Domane.Model.ServiceFacades;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Micro.ProductBLService
 {
@@ -16,14 +17,14 @@ namespace Micro.ProductBLService
             _repo = repo;
         }
 
-        public Product Get(int productId)
+        public async Task<Product> GetAsync(int productId)
         {
-            throw new NotImplementedException();
+            return await _repo.GetAsync(productId);
         }
 
-        public IList<Product> GetAll()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _repo.GetAllAsync();
         }
     }
 }

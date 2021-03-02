@@ -1,6 +1,7 @@
 ﻿using Domane.Model;
 using Domane.Model.ServiceFacades;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace OrderApi.Controllers
 {
@@ -15,18 +16,11 @@ namespace OrderApi.Controllers
             _serv = serv;
         }
 
-        //// GET: orders
-        //[HttpGet]
-        //public IEnumerable<Order> Get()
-        //{
-        //    return _serv.GetAll();
-        //}
 
-        // GET orders/5
-        [HttpGet("{id}", Name = "GetCustomer")]
-        public IActionResult Get(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(int id)
         {
-            var item = _serv.Get(id);
+            var item = await _serv.GetAsync(id);
             if (item == null)
             {
                 return NotFound();
@@ -36,29 +30,36 @@ namespace OrderApi.Controllers
 
         // POST orders
         [HttpPost]
-        public IActionResult Post([FromBody] Customer customer)
+        public async Task<IActionResult> PostAsync([FromBody] Customer customer)
         {
             if (customer == null)
             {
                 return BadRequest();
             }
-
-            return NoContent();
+            var newCust = await _serv.AddAsync(customer);
+            return Created(newCust.CustomerId + "", newCust);
         }
 
         [HttpPut]
-        public IActionResult Put([FromBody] Customer customer) {
+        public async Task<IActionResult> PutAsync([FromBody] Customer customer)
+        {
             if (customer == null)
             {
                 return BadRequest();
             }
-            return BadRequest();
-
+            await _serv.UpdateAsync(customer);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id) {
-            return BadRequest();
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            if (id == 0)
+            {
+                return BadRequest();
+            }
+            await _serv.DeleteAsync(id);
+            return NoContent();
         }
 
     }

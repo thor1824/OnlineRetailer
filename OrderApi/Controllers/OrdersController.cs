@@ -1,11 +1,12 @@
 ﻿using Domane.Model;
 using Domane.Model.ServiceFacades;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace OrderApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _serv;
@@ -15,62 +16,64 @@ namespace OrderApi.Controllers
             _serv = serv;
         }
 
-        //// GET: orders
-        //[HttpGet]
-        //public IEnumerable<Order> Get()
-        //{
-        //    return _serv.GetAll();
-        //}
+        
 
         // GET orders/5
-        [HttpGet("{id}", Name = "GetOrder")]
-        public IActionResult Get(int id)
+        [HttpGet]
+        [Route("[controller]/{id}")]
+        public async Task<IActionResult> GetAsync(int id)
         {
-            var item = _serv.Get(id);
+            var item = await _serv.GetAsync(id);
             if (item == null)
             {
                 return NotFound();
             }
-            return new ObjectResult(item);
+            return Ok(item);
+        }
+        
+        [HttpGet]
+        [Route("[controller]/[action]")]
+        public async Task<IActionResult> ByCustomer([FromQuery]int customerId)
+        {
+            if (customerId == 0) {
+                return BadRequest();
+            }
+
+            var items = await _serv.GetAllByCustomerAsync(customerId);
+            if (items == null)
+            {
+                return NotFound();
+            }
+            return Ok(items);
         }
 
         // POST orders
         [HttpPost]
-        public IActionResult Post([FromBody] Order order)
+        [Route("[controller]")]
+        public async Task<IActionResult> PostAsync([FromBody] Order order)
         {
             if (order == null)
             {
                 return BadRequest();
             }
-
-            //// Call ProductApi to get the product ordered
-            //RestClient c = new RestClient();
-            //// You may need to change the port number in the BaseUrl below
-            //// before you can run the request.
-            //c.BaseUrl = new Uri("https://localhost:5001/products/");
-            //var request = new RestRequest(order.ProductId.ToString(), Method.GET);
-            //var response = c.Execute<Product>(request);
-            //var orderedProduct = response.Data;
-
-            //if (order.Quantity <= orderedProduct.ItemsInStock - orderedProduct.ItemsReserved)
-            //{
-            //    // reduce the number of items in stock for the ordered product,
-            //    // and create a new order.
-            //    orderedProduct.ItemsReserved += order.Quantity;
-            //    var updateRequest = new RestRequest(orderedProduct.Id.ToString(), Method.PUT);
-            //    updateRequest.AddJsonBody(orderedProduct);
-            //    var updateResponse = c.Execute(updateRequest);
-
-            //    if (updateResponse.IsSuccessful)
-            //    {
-            //        var newOrder = _serv.Add(order);
-            //        return CreatedAtRoute("GetOrder", new { id = newOrder.Id }, newOrder);
-            //    }
-            //}
-
-            //// If the order could not be created, "return no content".
-            return NoContent();
+            var newOrder = await _serv.AddAsync(order);
+            return Created("" + newOrder.OrderId, newOrder);
         }
 
+        [HttpPut]
+        [Route("[controller]")]
+        public async Task<IActionResult> PutAsync([FromBody] Order order)
+        {
+            try
+            {
+                await _serv.ChangeStatusAsync(order.OrderId.Value, order.Status.Value);
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
     }
 }

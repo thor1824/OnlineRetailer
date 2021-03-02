@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderApi.Requester
+namespace RetailApi.Micro.OrderBLService.ServiceChannels
 {
     public class CustomerCommunicator : ICustomerService
     {
         private readonly IBus _bus;
 
-        public CustomerCommunicator(IBus bus) {
+        public CustomerCommunicator(IBus bus)
+        {
             _bus = bus;
         }
 

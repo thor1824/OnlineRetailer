@@ -1,53 +1,73 @@
-﻿using Domain.Model.ServiceFacades;
-using Domain.Storage;
+﻿using Domain.Storage;
 using Domane.Model;
 using Microsoft.EntityFrameworkCore;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Micro.OrderDAOService
 {
-    public class OrderRepository : IRepository<Order>
+    public class OrderRepository : IOrderRepository
     {
-        private readonly RetailContext db;
+        private readonly RetailContext _ctx;
 
-        public OrderRepository(RetailContext context)
+        public OrderRepository(RetailContext ctx)
         {
-            db = context;
+            _ctx = ctx;
         }
 
-        Order IRepository<Order>.Add(Order entity)
+        public async Task<Order> AddAync(Order entity)
         {
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
 
-            var newOrder = db.Orders.Add(entity).Entity;
-            db.SaveChanges();
-            return newOrder;
+            var entry = await _ctx.Orders.AddAsync(entity);
+            await _ctx.SaveChangesAsync();
+            return entry.Entity;
         }
 
-        void IRepository<Order>.Edit(Order entity)
+        public async Task EditAsync(Order entity)
         {
-            db.Entry(entity).State = EntityState.Modified;
-            db.SaveChanges();
+            var order = await _ctx.Orders.FirstOrDefaultAsync(o => o.OrderId == entity.OrderId);
+
+            if (entity.Status.HasValue) {
+                order.Status = entity.Status.Value;
+            }
+
+            await _ctx.SaveChangesAsync();
         }
 
-        Order IRepository<Order>.Get(int id)
+        public async Task<Order> GetAsync(int id)
         {
-            return db.Orders.FirstOrDefault(o => o.OrderId == id);
+            return await _ctx.Orders
+                .AsNoTracking()
+                .Include(o => o.OrderLines)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
         }
 
-        IEnumerable<Order> IRepository<Order>.GetAll()
+        public async Task<IEnumerable<Order>> GetAllAsync()
         {
-            return db.Orders.ToList();
+            return await _ctx.Orders
+                .AsNoTracking()
+                .Include(o => o.OrderLines)
+                .ToListAsync();
         }
 
-        void IRepository<Order>.Remove(int id)
+        public async Task<IEnumerable<Order>> GetByCustomerIdAsync(int customerId)
         {
-            var order = db.Orders.FirstOrDefault(p => p.OrderId == id);
-            db.Orders.Remove(order);
-            db.SaveChanges();
+            return await _ctx.Orders
+                .Where(o => o.CustomerId == customerId)
+                .Include(o => o.OrderLines)
+                .ToListAsync();
+        }
+
+        public async Task RemoveAsync(int id)
+        {
+            var order = await _ctx.Orders.FirstOrDefaultAsync(p => p.OrderId == id);
+            _ctx.Orders.Remove(order);
+            await _ctx.SaveChangesAsync();
         }
     }
 }

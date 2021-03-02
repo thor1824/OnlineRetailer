@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Domane.Model.ServiceFacades
 {
     public interface ICustomerService
     {
-        Customer Get(int customerId);
+        Task<Customer> GetAsync(int customerId);
 
-        Customer Add(Customer customer);
+        Task<Customer> AddAsync(Customer customer);
 
-        void Update(Customer customer);
+        Task UpdateAsync(Customer customer);
 
-        void Delete(int customerId);
+        Task DeleteAsync(int customerId);
     }
 }

@@ -17,7 +17,28 @@ namespace Domain.Storage
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<OrderLine>()
+                .HasKey(ol => ol.OrderLineId);
 
+            modelBuilder.Entity<OrderLine>()
+                .HasOne(bc => bc.Order)
+                .WithMany(b => b.OrderLines)
+                .HasForeignKey(bc => bc.OrderId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderLine>()
+                .HasOne(bc => bc.Product)
+                .WithMany(c => c.OrderLines)
+                .HasForeignKey(bc => bc.ProductId)
+                .IsRequired();
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Customer)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.CustomerId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

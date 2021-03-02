@@ -1,5 +1,7 @@
-﻿using Domain.Model.ServiceFacades;
-using Domane.Model;
+﻿using Domane.Model;
+using EasyNetQ;
+using RetailApi.Domain.Model.Messages;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,27 +12,36 @@ namespace Micro.ProductBLService
 {
     public class ProductRepoCom : IRepository<Product>
     {
-        public Product Add(Product entity)
+        private readonly IBus _bus;
+
+        public ProductRepoCom(IBus bus) {
+            _bus = bus;
+        }
+        public Task<Product> AddAync(Product entity)
         {
             throw new NotImplementedException();
         }
 
-        public void Edit(Product entity)
+        public Task EditAsync(Product entity)
         {
             throw new NotImplementedException();
         }
 
-        public Product Get(int id)
+        public async Task<Product> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            var request = new GetDaoRequest<Product>() { Id = id};
+            var response = await _bus.Rpc.RequestAsync<GetDaoRequest<Product>, GetDaoResponse<Product>>(request);
+            return response.Payload;
         }
 
-        public IEnumerable<Product> GetAll()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var request = new GetDaoRequest<IEnumerable<Product>>();
+            var response = await _bus.Rpc.RequestAsync<GetDaoRequest<IEnumerable<Product>>, GetDaoResponse<IEnumerable<Product>>>(request);
+            return response.Payload;
         }
 
-        public void Remove(int id)
+        public Task RemoveAsync(int id)
         {
             throw new NotImplementedException();
         }

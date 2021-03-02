@@ -1,9 +1,9 @@
-﻿using Domain.Model.ServiceFacades;
-using Domane.Model;
+﻿using Domane.Model;
 using Domane.Model.ServiceFacades;
+using EasyNetQ;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Micro.CustomerBLService
 {
@@ -11,27 +11,29 @@ namespace Micro.CustomerBLService
     {
         private readonly IRepository<Customer> _repo;
 
-        public CustomerService(IRepository<Customer> repo) {
+        public CustomerService(IRepository<Customer> repo)
+        {
             _repo = repo;
         }
-        public Customer Add(Customer customer)
+
+        public async Task<Customer> AddAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            return await _repo.AddAync(customer);
         }
 
-        public void Delete(int customerId)
+        public async Task DeleteAsync(int customerId)
         {
-            throw new NotImplementedException();
+            await _repo.RemoveAsync(customerId);
         }
 
-        public Customer Get(int customerId)
+        public async Task<Customer> GetAsync(int customerId)
         {
-            throw new NotImplementedException();
+            return await _repo.GetAsync(customerId);
         }
 
-        public void Update(Customer customer)
+        public async Task UpdateAsync(Customer customer)
         {
-            throw new NotImplementedException();
+            await _repo.EditAsync(customer);
         }
     }
 }

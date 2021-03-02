@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
 namespace Domane.Model
@@ -11,7 +11,10 @@ namespace Domane.Model
         public decimal Price { get; set; }
         public int ItemsInStock { get; set; }
         public int ItemsReserved { get; set; }
-        public IList<OrderLine> OrderLines { get; set; }
+
+
+
+        /*[JsonIgnore]*/ public IEnumerable<OrderLine> OrderLines { get; set; }
 
     }
 }

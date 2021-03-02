@@ -1,37 +1,99 @@
-﻿using Domain.Model.ServiceFacades;
-using Domane.Model;
+﻿using Domane.Model;
 using Domane.Model.ServiceFacades;
+using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Micro.OrderBLService
 {
     public class OrderService : IOrderService
     {
-        private readonly IRepository<Order> _repo;
+        private readonly IOrderRepository _repo;
+        private readonly IProductService _pServ;
+        private readonly ICustomerService _cServ;
 
-        public OrderService(IRepository<Order> repo)
+        public OrderService(IOrderRepository repo, IProductService pServ, ICustomerService cServ)
         {
             _repo = repo;
-        }
-        public Order Add(Order order)
-        {
-            throw new NotImplementedException();
+            _pServ = pServ;
+            _cServ = cServ;
         }
 
-        public void ChangeStatus(int OrderId, OrderStatus newStatus)
+        public async Task<Order> AddAsync(Order order)
         {
-            throw new NotImplementedException();
+            // check if UserID exist
+            var cust = await _cServ.GetAsync(order.CustomerId);
+            if (cust == null) {
+                // else throw error
+                throw new Exception($"Order Rejected: Customer does not exist");
+            }
+
+            // Check if credit standing good
+            if (cust.CreditStanding < 0) {
+                // else throw error
+                throw new Exception("Order Rejected: Credit standing is too low");
+            }
+            
+
+            // check if cust has unpaid orders
+            var result = await _repo.GetByCustomerIdAsync(order.CustomerId);
+            var unpaid = result.FirstOrDefault(o => o.Status != OrderStatus.Paid && o.Status != OrderStatus.Cancelled);
+            if (unpaid != null) {
+                // else throw error
+                throw new Exception("Order Rejected: Customer has outstanding bills");
+            }
+
+            // get Products
+
+            // Check inventory if enough
+            var temp = new List<Product>();
+            foreach (var line in order.OrderLines)
+            {
+                var prod = await _pServ.GetAsync(line.ProductId);
+                if(prod ==  null)
+                {
+                    throw new Exception("Order Rejected: Product Does not exist");
+                }
+                if (prod.ItemsInStock >= line.Quantity)
+                {
+                    // else throw error
+                    throw new Exception("Order Rejected: Product quantity too low");
+                }
+                temp.Add(prod);
+                line.Product = prod;
+
+                line.Product.ItemsInStock = line.Product.ItemsInStock - line.Quantity;
+                line.Product.ItemsReserved = line.Product.ItemsReserved + line.Quantity;
+            }
+
+            return await _repo.AddAync(order);
         }
 
-        public Order Get(int orderId)
+        public async Task ChangeStatusAsync(int orderId, OrderStatus newStatus)
         {
-            throw new NotImplementedException();
+            var update = new Order { OrderId = orderId, Status = newStatus };
+            if (newStatus == OrderStatus.Shipped) {
+                var order = await _repo.GetAsync(orderId);
+                foreach (var line in order.OrderLines)
+                {
+                    line.Product.ItemsReserved = line.Product.ItemsReserved - line.Quantity;
+                }
+                order.Status = newStatus;
+                update = order;
+            }
+            await _repo.EditAsync(update);
         }
 
-        public IList<Order> GetAllByCustomer(int customerId)
+        public async Task<Order> GetAsync(int orderId)
         {
-            throw new NotImplementedException();
+            return await _repo.GetAsync(orderId);
+        }
+
+        public async Task<IEnumerable<Order>> GetAllByCustomerAsync(int customerId)
+        {
+            return await _repo.GetByCustomerIdAsync(customerId);
         }
     }
 }

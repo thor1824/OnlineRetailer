@@ -6,11 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyNetQ" Version="6.3.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domane.Model\Domain.Model.csproj" />
+    <ProjectReference Include="..\Domane.Model\RetailApi.Domain.Model.csproj" />
+    <ProjectReference Include="..\EasyNetQ.Custom.Serializer\EasyNetQ.Custom.Serializer.csproj" />
   </ItemGroup>
 
 </Project>

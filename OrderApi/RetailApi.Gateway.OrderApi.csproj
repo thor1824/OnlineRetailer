@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="EasyNetQ" Version="6.3.1" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domane.Model\RetailApi.Domain.Model.csproj" />
+    <ProjectReference Include="..\EasyNetQ.Custom.Serializer\EasyNetQ.Custom.Serializer.csproj" />
+  </ItemGroup>
+</Project>
