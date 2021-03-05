@@ -1,13 +1,17 @@
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ProductApi.Requester;
 using Newtonsoft.Json;
-namespace ProductApi
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
+using Or.Domain.Storage;
+using Or.Micro.Products.Repositories;
+using Or.Micro.Products.Services;
+
+namespace Or.Micro.Products
 {
     public class Startup
     {
@@ -23,9 +27,12 @@ namespace ProductApi
         {
 
             // Register repositories for dependency injection
-            services.AddScoped<IProductService, ProductCommunicator>();
-            services.AddSingleton(RabbitHutch.CreateBus("host=localhost"));
-            services.AddControllers();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IRepository<Product>, ProductRepository>();
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+            services.AddTransient<IDbInitializer, DbInitializer>();
+            services.AddControllers().AddNewtonsoftJson(x =>
+                x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,14 +40,17 @@ namespace ProductApi
         {
             if (env.IsDevelopment())
             {
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var sp = scope.ServiceProvider;
+                    var dbContext = sp.GetService<RetailContext>();
+                    var dbInitializer = sp.GetService<IDbInitializer>();
+                    dbInitializer.Initialize(dbContext);
+                }
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

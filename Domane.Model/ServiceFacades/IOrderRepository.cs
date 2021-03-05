@@ -1,11 +1,11 @@
-﻿using Domane.Model;
+﻿using Or.Domain.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RetailApi.Domain.Model.ServiceFacades
+namespace Or.Domain.Model.ServiceFacades
 {
     public interface IOrderRepository : IRepository<Order>
     {

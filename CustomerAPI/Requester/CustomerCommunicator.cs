@@ -1,19 +1,17 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
+﻿using EasyNetQ;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using RetailApi.Domain.Model.Messages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderApi.Requester
+namespace Or.Micro.Customers.Requester
 {
     public class CustomerCommunicator : ICustomerService
     {
         private readonly IBus _bus;
 
-        public CustomerCommunicator(IBus bus) {
+        public CustomerCommunicator(IBus bus)
+        {
             _bus = bus;
         }
 

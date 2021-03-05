@@ -1,10 +1,10 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using System;
 using System.Threading.Tasks;
 
-namespace OrderApi.Controllers
+namespace Or.Micro.Orders.Controllers
 {
     [ApiController]
     public class OrdersController : ControllerBase
@@ -32,7 +32,7 @@ namespace OrderApi.Controllers
                 }
                 return Ok(item);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -56,7 +56,7 @@ namespace OrderApi.Controllers
                 }
                 return Ok(items);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
@@ -76,7 +76,7 @@ namespace OrderApi.Controllers
                 var newOrder = await _serv.AddAsync(order);
                 return Created("" + newOrder.OrderId, newOrder);
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RetailApi.Domain.Model.ServiceFacades
+namespace Or.Domain.Model.ServiceFacades
 {
     public interface IRepository<T>
     {

@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  or.micro.customers:
+    image: ${DOCKER_REGISTRY-}ormicrocustomers
+    build:
+      context: .
+      dockerfile: CustomerAPI/Dockerfile
+
+  or.micro.orders:
+    image: ${DOCKER_REGISTRY-}ormicroorders
+    build:
+      context: .
+      dockerfile: OrderApi/Dockerfile
+
+
+  or.micro.products:
+    image: ${DOCKER_REGISTRY-}ormicroproducts
+    build:
+      context: .
+      dockerfile: ProductApi/Dockerfile
+
+
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+

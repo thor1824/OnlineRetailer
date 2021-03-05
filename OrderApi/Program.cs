@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace OrderApi
+namespace Or.Micro.Orders
 {
     public class Program
     {

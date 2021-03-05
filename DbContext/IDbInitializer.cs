@@ -1,4 +1,4 @@
-﻿namespace Domain.Storage
+﻿namespace Or.Domain.Storage
 {
     public interface IDbInitializer
     {

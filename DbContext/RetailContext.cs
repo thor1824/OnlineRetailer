@@ -1,7 +1,7 @@
-﻿using Domane.Model;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Or.Domain.Model.Entities;
 
-namespace Domain.Storage
+namespace Or.Domain.Storage
 {
     public class RetailContext : DbContext
     {

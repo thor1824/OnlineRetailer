@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Or.Domain.Model.Entities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Domane.Model.ServiceFacades
+namespace Or.Domain.Model.ServiceFacades
 {
     public interface IOrderService
     {

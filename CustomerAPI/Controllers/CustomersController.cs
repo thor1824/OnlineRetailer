@@ -1,9 +1,9 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using System.Threading.Tasks;
 
-namespace OrderApi.Controllers
+namespace Or.Micro.Customers.Controllers
 {
     [ApiController]
     [Route("[controller]")]
