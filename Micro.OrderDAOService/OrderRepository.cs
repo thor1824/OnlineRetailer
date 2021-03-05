@@ -1,7 +1,7 @@
-﻿using Domain.Storage;
-using Domane.Model;
-using Microsoft.EntityFrameworkCore;
-using RetailApi.Domain.Model.ServiceFacades;
+﻿using Microsoft.EntityFrameworkCore;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
+using Or.Domain.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;

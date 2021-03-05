@@ -1,11 +1,10 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
+﻿using EasyNetQ;
 using EasyNetQ.Custom.Serializer;
 using Microsoft.Extensions.DependencyInjection;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using RetailApi.Domain.Model.Messages;
 using RetailApi.Domain.Model.Messages.Specialised;
-using RetailApi.Domain.Model.ServiceFacades;
 using RetailApi.Micro.OrderBLService.ServiceChannels;
 using System;
 

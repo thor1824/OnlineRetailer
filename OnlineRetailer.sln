@@ -2,11 +2,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Gateway.ProductApi", "ProductApi\RetailApi.Gateway.ProductApi.csproj", "{1AB07F84-B486-4705-9F0B-425D2EE530E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Or.Micro.Products", "ProductApi\Or.Micro.Products.csproj", "{1AB07F84-B486-4705-9F0B-425D2EE530E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Gateway.OrderApi", "OrderApi\RetailApi.Gateway.OrderApi.csproj", "{559DB926-84A6-4388-A849-138C85B00412}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Or.Micro.Orders", "OrderApi\Or.Micro.Orders.csproj", "{559DB926-84A6-4388-A849-138C85B00412}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Domain.Model", "Domane.Model\RetailApi.Domain.Model.csproj", "{B5DC224E-1DEC-4523-9394-CD237A17CDCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Or.Domain.Model", "Domane.Model\Or.Domain.Model.csproj", "{B5DC224E-1DEC-4523-9394-CD237A17CDCC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Platform", "Platform", "{DDCF8159-3E3C-48E1-AC61-958112792087}"
 EndProject
@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API Gateways", "API Gateway
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Micro Services", "Micro Services", "{0E728486-1892-4650-899A-247B646425CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Domain.Storage", "DbContext\RetailApi.Domain.Storage.csproj", "{8DDCF150-957C-4A6C-94BD-620F850DB27F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Or.Domain.Storage", "DbContext\Or.Domain.Storage.csproj", "{8DDCF150-957C-4A6C-94BD-620F850DB27F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Micro.ProductBLService", "Micro.ProductBLService\RetailApi.Micro.ProductBLService.csproj", "{6275729E-9667-4D19-AAA7-C51EE10686D9}"
 EndProject
@@ -28,9 +28,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Micro.OrderBLServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Micro.OrderDAOService", "Micro.OrderDAOService\RetailApi.Micro.OrderDAOService.csproj", "{8ED2D1E7-6F38-4DF8-8342-E0C58E5B093F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetailApi.Gateway.CustomerApi", "CustomerAPI\RetailApi.Gateway.CustomerApi.csproj", "{5FC20B16-9A29-480B-A44A-38BC7F04A525}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Or.Micro.Customers", "CustomerAPI\Or.Micro.Customers.csproj", "{5FC20B16-9A29-480B-A44A-38BC7F04A525}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyNetQ.Custom.Serializer", "EasyNetQ.Custom.Serializer\EasyNetQ.Custom.Serializer.csproj", "{BF204932-9EF4-45B2-8B20-204E2D829D4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyNetQ.Custom.Serializer", "EasyNetQ.Custom.Serializer\EasyNetQ.Custom.Serializer.csproj", "{BF204932-9EF4-45B2-8B20-204E2D829D4B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{5016C5A0-3EB7-49FD-B1D9-E69046A2A57A}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DAB0D14A-EC8E-41F7-854C-4A0E59608F62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +90,14 @@ Global
 		{BF204932-9EF4-45B2-8B20-204E2D829D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF204932-9EF4-45B2-8B20-204E2D829D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF204932-9EF4-45B2-8B20-204E2D829D4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5016C5A0-3EB7-49FD-B1D9-E69046A2A57A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5016C5A0-3EB7-49FD-B1D9-E69046A2A57A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5016C5A0-3EB7-49FD-B1D9-E69046A2A57A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5016C5A0-3EB7-49FD-B1D9-E69046A2A57A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAB0D14A-EC8E-41F7-854C-4A0E59608F62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB0D14A-EC8E-41F7-854C-4A0E59608F62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB0D14A-EC8E-41F7-854C-4A0E59608F62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB0D14A-EC8E-41F7-854C-4A0E59608F62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,6 +115,7 @@ Global
 		{8ED2D1E7-6F38-4DF8-8342-E0C58E5B093F} = {0E728486-1892-4650-899A-247B646425CE}
 		{5FC20B16-9A29-480B-A44A-38BC7F04A525} = {62FF5565-C4D7-495C-AD3A-7878DCF3C221}
 		{BF204932-9EF4-45B2-8B20-204E2D829D4B} = {DDCF8159-3E3C-48E1-AC61-958112792087}
+		{5016C5A0-3EB7-49FD-B1D9-E69046A2A57A} = {62FF5565-C4D7-495C-AD3A-7878DCF3C221}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D42AA7FB-CFF4-4905-BE76-2DBE405D937A}

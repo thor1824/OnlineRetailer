@@ -1,16 +1,17 @@
-﻿using Domane.Model;
+﻿using Or.Domain.Model.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Domain.Storage
+namespace Or.Domain.Storage
 {
     public class DbInitializer : IDbInitializer
     {
         // This method will create and seed the database.
         public void Initialize(RetailContext context)
         {
-            if (context.Database.EnsureCreated()) {
+            if (context.Database.EnsureCreated())
+            {
             };
 
 

@@ -1,6 +1,6 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
+﻿using EasyNetQ;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using RetailApi.Domain.Model.Messages;
 using System;
 using System.Collections.Generic;

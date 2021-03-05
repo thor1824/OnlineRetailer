@@ -1,7 +1,6 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
-using RetailApi.Domain.Model.ServiceFacades;
+﻿using EasyNetQ;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using System;
 using System.Threading.Tasks;
 

@@ -1,11 +1,11 @@
-﻿using Domain.Storage;
-using Domane.Model;
-using EasyNetQ;
+﻿using EasyNetQ;
 using Micro.ProductDAOService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
+using Or.Domain.Storage;
 using RetailApi.Domain.Model.Messages;
-using RetailApi.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
 

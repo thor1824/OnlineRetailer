@@ -1,13 +1,16 @@
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OrderApi.Requester;
+using Newtonsoft.Json;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
+using Or.Domain.Storage;
+using Or.Micro.Customers.Repositories;
+using Or.Micro.Customers.Service;
 
-namespace CustomerAPI
+namespace Or.Micro.Customers
 {
     public class Startup
     {
@@ -15,10 +18,13 @@ namespace CustomerAPI
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ICustomerService, CustomerCommunicator>();
-            services.AddSingleton(RabbitHutch.CreateBus("host=localhost"));
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IRepository<Customer>, CustomerRepository>();
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+            services.AddTransient<IDbInitializer, DbInitializer>();
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(x =>
+                x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -26,6 +32,14 @@ namespace CustomerAPI
         {
             if (env.IsDevelopment())
             {
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var sp = scope.ServiceProvider;
+                    var dbContext = sp.GetService<RetailContext>();
+                    var dbInitializer = sp.GetService<IDbInitializer>();
+                    dbInitializer.Initialize(dbContext);
+                }
+
                 app.UseDeveloperExceptionPage();
             }
 

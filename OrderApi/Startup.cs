@@ -1,15 +1,17 @@
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
-using EasyNetQ.Custom.Serializer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OrderApi.Requester;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+using Or.Domain.Model.ServiceFacades;
+using Or.Domain.Storage;
+using Or.Micro.Orders.Repositories;
+using Or.Micro.Orders.ServiceChannels;
+using Or.Micro.Orders.Services;
 
-namespace OrderApi
+namespace Or.Micro.Orders
 {
     public class Startup
     {
@@ -23,14 +25,17 @@ namespace OrderApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IOrderService, OrderCommunicator>();
-            var bus = RabbitHutch.CreateBus("host=localhost", serviceRegister => serviceRegister.Register<ISerializer>(serviceProvider => new CustomSerializer()));
-            services.AddSingleton(bus);
-            services.AddControllers();
-            services.AddControllers()/*.AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
-            })*/;
+            services.AddHttpClient();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+
+            services.AddScoped<ICustomerService, CustomerHttpChannel>();
+            services.AddScoped<IProductService, ProductHttpChannel>();
+
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+            services.AddTransient<IDbInitializer, DbInitializer>();
+            services.AddControllers().AddNewtonsoftJson(x =>
+                x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,14 +43,17 @@ namespace OrderApi
         {
             if (env.IsDevelopment())
             {
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var sp = scope.ServiceProvider;
+                    var dbContext = sp.GetService<RetailContext>();
+                    var dbInitializer = sp.GetService<IDbInitializer>();
+                    dbInitializer.Initialize(dbContext);
+                }
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

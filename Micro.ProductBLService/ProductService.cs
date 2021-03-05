@@ -1,6 +1,5 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using RetailApi.Domain.Model.ServiceFacades;
+﻿using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
-namespace Domane.Model
+namespace Or.Domain.Model.Entities
 {
     public class Product
     {
@@ -14,7 +14,8 @@ namespace Domane.Model
 
 
 
-        /*[JsonIgnore]*/ public IEnumerable<OrderLine> OrderLines { get; set; }
+        /*[JsonIgnore]*/
+        public IEnumerable<OrderLine> OrderLines { get; set; }
 
     }
 }

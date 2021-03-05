@@ -1,8 +1,8 @@
-﻿using Domane.Model.ServiceFacades;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Or.Domain.Model.ServiceFacades;
 using System.Threading.Tasks;
 
-namespace ProductApi.Controllers
+namespace Or.Micro.Products.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -48,7 +48,7 @@ namespace ProductApi.Controllers
             }
         }
 
-        
+
 
         //// POST products
         //[HttpPost]

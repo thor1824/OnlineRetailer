@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Domane.Model
+namespace Or.Domain.Model.Entities
 {
     public class Order
     {

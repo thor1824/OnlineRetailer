@@ -1,13 +1,13 @@
-﻿using Domane.Model;
-using Domane.Model.ServiceFacades;
-using EasyNetQ;
+﻿using EasyNetQ;
+using Or.Domain.Model.Entities;
+using Or.Domain.Model.ServiceFacades;
 using RetailApi.Domain.Model.Messages;
 using RetailApi.Domain.Model.Messages.Specialised;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrderApi.Requester
+namespace Or.Micro.Orders.Requester
 {
     public class OrderCommunicator : IOrderService
     {
@@ -27,7 +27,7 @@ namespace OrderApi.Requester
 
         public async Task ChangeStatusAsync(int orderId, OrderStatus newStatus)
         {
-            var request = new UpdateBLRequest<Order>() { Payload = new Order { OrderId  = orderId, Status = newStatus} };
+            var request = new UpdateBLRequest<Order>() { Payload = new Order { OrderId = orderId, Status = newStatus } };
             await _bus.Rpc.RequestAsync<UpdateBLRequest<Order>, UpdateBLResponse<Order>>(request);
         }
 

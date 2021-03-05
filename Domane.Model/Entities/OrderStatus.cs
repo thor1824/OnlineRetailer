@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domane.Model
+namespace Or.Domain.Model.Entities
 {
     public enum OrderStatus
     {
