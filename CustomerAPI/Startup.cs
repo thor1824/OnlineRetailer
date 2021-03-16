@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Or.Domain.Model.Entities;
 using Or.Domain.Model.ServiceFacades;
 using Or.Domain.Storage;
+using Or.Micro.Customers.BackgroundServices;
 using Or.Micro.Customers.Repositories;
 using Or.Micro.Customers.Service;
 
@@ -18,11 +19,24 @@ namespace Or.Micro.Customers
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // Scoped
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IRepository<Customer>, CustomerRepository>();
-            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+
+            // Transient
             services.AddTransient<IDbInitializer, DbInitializer>();
 
+            // Singleton
+
+            // DB context
+            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+
+            
+
+            // Hosted Services
+            services.AddHostedService<CustomerSubscriper>();
+
+            // Controllers
             services.AddControllers().AddNewtonsoftJson(x =>
                 x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
