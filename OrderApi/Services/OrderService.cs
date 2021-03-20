@@ -1,8 +1,9 @@
-﻿using Or.Domain.Model.Entities;
-using Or.Domain.Model.ServiceFacades;
+﻿using EasyNetQ;
+using Or.Micro.Orders.MessageGateways;
+using Or.Micro.Orders.Models;
+using Or.Micro.Orders.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Or.Micro.Orders.Services
@@ -10,83 +11,19 @@ namespace Or.Micro.Orders.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _repo;
-        private readonly IProductService _pServ;
-        private readonly ICustomerService _cServ;
+        private readonly IProductMessageGateway _pServ;
+        private readonly ICustomerMessageGateway _cServ;
+        private readonly IOrderMessageGateway _oServ;
 
-        public OrderService(IOrderRepository repo, IProductService pServ, ICustomerService cServ)
+        public IBus Bus { get; }
+
+        public OrderService(IOrderRepository repo, IProductMessageGateway pServ, ICustomerMessageGateway cServ, IOrderMessageGateway oServ, IBus bus)
         {
             _repo = repo;
             _pServ = pServ;
             _cServ = cServ;
-        }
-
-        public async Task<Order> AddAsync(Order order)
-        {
-            // check if UserID exist
-            var cust = await _cServ.GetAsync(order.CustomerId);
-            if (cust == null && cust.CustomerId == 0)
-            {
-                // else throw error
-                throw new Exception($"Order Rejected: Customer does not exist");
-            }
-
-            // Check if credit standing good
-            if (cust.CreditStanding < 0)
-            {
-                // else throw error
-                throw new Exception("Order Rejected: Credit standing is too low");
-            }
-
-
-            // check if cust has unpaid orders
-            var result = await _repo.GetByCustomerIdAsync(order.CustomerId);
-            var unpaid = result.FirstOrDefault(o => o.Status != OrderStatus.Paid && o.Status != OrderStatus.Cancelled);
-            if (unpaid != null)
-            {
-                // else throw error
-                throw new Exception("Order Rejected: Customer has outstanding bills");
-            }
-
-            // get Products
-
-            // Check inventory if enough
-            var temp = new List<Product>();
-            foreach (var line in order.OrderLines)
-            {
-                var prod = await _pServ.GetAsync(line.ProductId);
-                if (prod == null && prod.ProductId == 0)
-                {
-                    throw new Exception("Order Rejected: Product Does not exist");
-                }
-                if (prod.ItemsInStock < line.Quantity)
-                {
-                    // else throw error
-                    throw new Exception("Order Rejected: Product quantity too low");
-                }
-                temp.Add(prod);
-                line.Product = prod;
-
-                line.Product.ItemsInStock = line.Product.ItemsInStock - line.Quantity;
-                line.Product.ItemsReserved = line.Product.ItemsReserved + line.Quantity;
-            }
-
-            return await _repo.AddAync(order);
-        }
-
-        public async Task ChangeStatusAsync(int orderId, OrderStatus newStatus)
-        {
-            var update = new Order { OrderId = orderId, Status = newStatus };
-            if (newStatus == OrderStatus.Shipped)
-            {
-                var order = await _repo.GetAsync(orderId);
-                foreach (var line in order.OrderLines)
-                {
-                    line.Product.ItemsReserved = line.Product.ItemsReserved - line.Quantity;
-                }
-                order.Status = newStatus;
-                update = order;
-            }
-            await _repo.EditAsync(update);
+            _oServ = oServ;
+            Bus = bus;
         }
 
         public async Task<Order> GetAsync(int orderId)
@@ -97,6 +34,116 @@ namespace Or.Micro.Orders.Services
         public async Task<IEnumerable<Order>> GetAllByCustomerAsync(int customerId)
         {
             return await _repo.GetByCustomerIdAsync(customerId);
+        }
+
+        public async Task<Order> AddAsync(Order order)
+        {
+            bool customerExists = await _cServ.RpcExistsAsync(order.CustomerId);
+            if (!customerExists)
+            {
+                throw new Exception($"Customer {order.CustomerId} does not exist");
+            }
+
+            bool bills = await HasOutStandingBill(order.CustomerId);
+            if (bills)
+            {
+                throw new Exception($"Customer {order.CustomerId} has unpaid bills, order was rejected");
+            }
+
+            order.Status = OrderStatus.Submitted;
+            var newOrder = await _repo.AddAync(order);
+
+            await _cServ.PublishCustomerValidationRequestAsync(newOrder.OrderId.Value, newOrder.CustomerId);
+            //await _oServ.PublishOutstandingBillsRequestAsync(newOrder.OrderId.Value, newOrder.CustomerId);
+
+            Console.WriteLine("Order was submitted");
+
+            return order;
+        }
+
+        public async Task ChangeStatusAsync(int orderId, OrderStatus newStatus)
+        {
+            var order = await GetAsync(orderId);
+
+            order.Status = newStatus;
+
+            await _repo.EditAsync(order);
+
+            await _oServ.PublishStatusChangeAsync(order);
+        }
+
+
+
+        public async Task<bool> HasOutStandingBill(int customerId)
+        {
+            var orders = await GetAllByCustomerAsync(customerId);
+
+            foreach (var item in orders)
+            {
+                if (item.Status == OrderStatus.Unpaid)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public async Task HandleOutStandingBillsAsync(int orderId, bool accepted)
+        {
+            await HandleCustomerResultAsync(orderId, accepted);
+        }
+
+        public async Task HandleCustomerResultAsync(int orderId, bool accepted)
+        {
+            var order = await GetAsync(orderId);
+
+            if (order.Status == OrderStatus.Rejected)
+            {
+                return;
+            }
+
+            if (!accepted)
+            {
+                order.Status = OrderStatus.Rejected;
+                await _repo.EditAsync(order);
+
+                await _oServ.PublishStatusChangeAsync(order);
+
+                return;
+            }
+
+            if (accepted)
+            {
+
+                await _pServ.PublishStockValidationRequestAsync(order);
+                return;
+            }
+
+        }
+
+        public async Task HandleStockResultAsync(int orderId, bool accepted)
+        {
+            Order order = await GetAsync(orderId);
+
+            if (order.Status == OrderStatus.Rejected)
+            {
+                return;
+            }
+
+            if (!accepted)
+            {
+                order.Status = OrderStatus.Rejected;
+                await _repo.EditAsync(order);
+
+                await _oServ.PublishStatusChangeAsync(order);
+
+                return;
+            }
+
+            order.Status = OrderStatus.Completed;
+            await _repo.EditAsync(order);
+            await _oServ.PublishStatusChangeAsync(order);
         }
     }
 }

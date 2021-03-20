@@ -1,18 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Or.Domain.Model.Entities;
 using Or.Domain.Model.ServiceFacades;
-using Or.Domain.Storage;
+using Or.Micro.Products.Data;
+using Or.Micro.Products.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Or.Micro.Products.Repositories
 {
     public class ProductRepository : IRepository<Product>
     {
-        private readonly RetailContext _ctx;
+        private readonly ProductContext _ctx;
 
-        public ProductRepository(RetailContext context)
+        public ProductRepository(ProductContext context)
         {
             _ctx = context;
         }
@@ -25,12 +24,12 @@ namespace Or.Micro.Products.Repositories
 
         public async Task<Product> GetAsync(int id)
         {
-            return await _ctx.Products.AsNoTracking().FirstOrDefaultAsync(p => p.ProductId == id);
+            return await _ctx.Products.FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return await _ctx.Products.AsNoTracking().ToListAsync();
+            return await _ctx.Products.ToListAsync();
         }
 
         public async Task RemoveAsync(int id)

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Or.Domain.Model.Entities;
-using Or.Domain.Model.ServiceFacades;
-using Or.Domain.Storage;
+using Or.Micro.Orders.Data;
+using Or.Micro.Orders.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +10,9 @@ namespace Or.Micro.Orders.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
-        private readonly RetailContext _ctx;
+        private readonly OrderContext _ctx;
 
-        public OrderRepository(RetailContext ctx)
+        public OrderRepository(OrderContext ctx)
         {
             _ctx = ctx;
         }
@@ -23,28 +22,6 @@ namespace Or.Micro.Orders.Repositories
             if (entity.Date == null)
                 entity.Date = DateTime.Now;
 
-
-            foreach (var line in entity.OrderLines)
-            {
-                if (line.Product != null)
-                {
-                    var temp = line.Product;
-                    if (!_ctx.Set<Product>().Local.Any(e => e.ProductId == line.Product.ProductId))
-                    {
-                        _ctx.Products.Attach(temp);
-                        _ctx.Entry(temp).Property(x => x.ItemsInStock).IsModified = true;
-                        _ctx.Entry(temp).Property(x => x.ItemsReserved).IsModified = true;
-                    }
-                    else
-                    {
-                        var prod = _ctx.Set<Product>().Local.FirstOrDefault(e => e.ProductId == line.ProductId);
-                        prod.ItemsInStock = line.Product.ItemsInStock;
-                        prod.ItemsReserved = line.Product.ItemsReserved;
-                    }
-
-                }
-                line.Product = null;
-            }
             var entry = await _ctx.Orders.AddAsync(entity);
             await _ctx.SaveChangesAsync();
             return entry.Entity;
@@ -52,57 +29,21 @@ namespace Or.Micro.Orders.Repositories
 
         public async Task EditAsync(Order entity)
         {
-            Order order;
-
-            if (!_ctx.Set<Order>().Local.Any(o => o.OrderId == entity.OrderId))
-            {
-                order = await _ctx.Orders.AsNoTracking().FirstOrDefaultAsync(o => o.OrderId == entity.OrderId);
-            }
-            else {
-                order = _ctx.Set<Order>().Local.FirstOrDefault(o => o.OrderId == entity.OrderId);
-            }
-
-                if (entity.Status.HasValue)
-            {
-                order.Status = entity.Status.Value;
-            }
-            if (entity.OrderLines != null)
-            {
-                foreach (var line in entity.OrderLines)
-                {
-                    var temp = line.Product;
-                    if (!_ctx.Set<Product>().Local.Any(e => e.ProductId == line.Product.ProductId))
-                    {
-                        _ctx.Products.Attach(temp);
-                        _ctx.Entry(temp).Property(x => x.ItemsInStock).IsModified = true;
-                        _ctx.Entry(temp).Property(x => x.ItemsReserved).IsModified = true;
-                    }
-                    else
-                    {
-                        var prod = _ctx.Set<Product>().Local.FirstOrDefault(e => e.ProductId == line.ProductId);
-                        prod.ItemsInStock = line.Product.ItemsInStock;
-                        prod.ItemsReserved = line.Product.ItemsReserved;
-                    }
-                }
-            }
+            _ctx.Entry(entity).State = EntityState.Modified;
             await _ctx.SaveChangesAsync();
         }
 
         public async Task<Order> GetAsync(int id)
         {
             return await _ctx.Orders
-                .AsNoTracking()
                 .Include(o => o.OrderLines)
-                .ThenInclude(ol => ol.Product)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
         {
             return await _ctx.Orders
-                .AsNoTracking()
                 .Include(o => o.OrderLines)
-                .ThenInclude(ol => ol.Product)
                 .ToListAsync();
         }
 
@@ -111,7 +52,6 @@ namespace Or.Micro.Orders.Repositories
             return await _ctx.Orders
                 .Where(o => o.CustomerId == customerId)
                 .Include(o => o.OrderLines)
-                .ThenInclude(ol => ol.Product)
                 .ToListAsync();
         }
 
