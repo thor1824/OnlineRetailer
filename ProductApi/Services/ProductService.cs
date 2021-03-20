@@ -1,5 +1,6 @@
-﻿using Or.Domain.Model.Entities;
-using Or.Domain.Model.ServiceFacades;
+﻿using Or.Domain.Model.ServiceFacades;
+using Or.Domain.Model.SharedModels;
+using Or.Micro.Products.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,6 +25,11 @@ namespace Or.Micro.Products.Services
         public async Task<IEnumerable<Product>> GetAllAsync()
         {
             return await _repo.GetAllAsync();
+        }
+
+        public async Task UpdateAsync(Product prod)
+        {
+            await _repo.EditAsync(prod);
         }
     }
 }

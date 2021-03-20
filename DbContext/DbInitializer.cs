@@ -1,4 +1,5 @@
 ﻿using Or.Domain.Model.Entities;
+using Or.Domain.Model.SharedModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

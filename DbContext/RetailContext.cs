@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Or.Domain.Model.Entities;
+using Or.Domain.Model.SharedModels;
 
 namespace Or.Domain.Storage
 {
@@ -11,7 +12,7 @@ namespace Or.Domain.Storage
         }
 
         public DbSet<Product> Products { get; set; }
-        public DbSet<Customer> Customers { get; set; }
+        public DbSet<CustomerDto> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderLine> OrderLines { get; set; }
 

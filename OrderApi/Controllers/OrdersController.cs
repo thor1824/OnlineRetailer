@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Or.Domain.Model.Entities;
-using Or.Domain.Model.ServiceFacades;
+﻿using EasyNetQ;
+using Microsoft.AspNetCore.Mvc;
+using Or.Micro.Orders.Models;
+using Or.Micro.Orders.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -10,10 +11,12 @@ namespace Or.Micro.Orders.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _serv;
+        private readonly IBus _bus;
 
-        public OrdersController(IOrderService serv)
+        public OrdersController(IOrderService serv, IBus bus)
         {
             _serv = serv;
+            _bus = bus;
         }
 
 

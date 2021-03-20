@@ -1,3 +1,4 @@
+using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -5,10 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Or.Domain.Model.ServiceFacades;
-using Or.Domain.Storage;
+using Or.Micro.Orders.BackgroundServices;
+using Or.Micro.Orders.Data;
+using Or.Micro.Orders.MessageGateways;
+using Or.Micro.Orders.MessageGateways.Impl;
 using Or.Micro.Orders.Repositories;
-using Or.Micro.Orders.ServiceChannels;
 using Or.Micro.Orders.Services;
 
 namespace Or.Micro.Orders
@@ -25,17 +27,31 @@ namespace Or.Micro.Orders
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient();
+            // Scoped
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IOrderRepository, OrderRepository>();
 
-            services.AddScoped<ICustomerService, CustomerHttpChannel>();
-            services.AddScoped<IProductService, ProductHttpChannel>();
+            services.AddScoped<IProductMessageGateway, ProducMessageGateway>();
+            services.AddScoped<ICustomerMessageGateway, CustomerMessageGateway>();
+            services.AddScoped<IOrderMessageGateway, OrderMessageGateway>();
 
-            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+            // Transient
             services.AddTransient<IDbInitializer, DbInitializer>();
+
+            // Singleton
+            services.AddSingleton(RabbitHutch.CreateBus("host=rabbitmq;username=guest;password=guest"));
+
+            // DB context
+            services.AddDbContext<OrderContext>(opt => opt.UseInMemoryDatabase("OrderDB").EnableSensitiveDataLogging());
+
+            // Hosted Services
+            services.AddHostedService<OrderListener>();
+
+
+            // Controllers
             services.AddControllers().AddNewtonsoftJson(x =>
                 x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,7 +62,7 @@ namespace Or.Micro.Orders
                 using (var scope = app.ApplicationServices.CreateScope())
                 {
                     var sp = scope.ServiceProvider;
-                    var dbContext = sp.GetService<RetailContext>();
+                    var dbContext = sp.GetService<OrderContext>();
                     var dbInitializer = sp.GetService<IDbInitializer>();
                     dbInitializer.Initialize(dbContext);
                 }

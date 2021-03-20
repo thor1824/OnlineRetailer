@@ -6,12 +6,16 @@ services:
     build:
       context: .
       dockerfile: CustomerAPI/Dockerfile
+    depends_on:
+      - "rabbitmq"
 
   or.micro.orders:
     image: ${DOCKER_REGISTRY-}ormicroorders
     build:
       context: .
       dockerfile: OrderApi/Dockerfile
+    depends_on:
+      - "rabbitmq"
 
 
   or.micro.products:
@@ -19,6 +23,8 @@ services:
     build:
       context: .
       dockerfile: ProductApi/Dockerfile
+    depends_on:
+      - "rabbitmq"
 
 
   apigateway:
@@ -26,6 +32,10 @@ services:
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
+    depends_on:
+      - "or.micro.products"
+      - "or.micro.orders"
+      - "or.micro.customers"
 
 
   rabbitmq:

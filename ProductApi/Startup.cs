@@ -1,3 +1,4 @@
+using EasyNetQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -5,9 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Or.Domain.Model.Entities;
 using Or.Domain.Model.ServiceFacades;
-using Or.Domain.Storage;
+using Or.Micro.Products.BackgroundServices;
+using Or.Micro.Products.Data;
+using Or.Micro.Products.Models;
 using Or.Micro.Products.Repositories;
 using Or.Micro.Products.Services;
 
@@ -26,11 +28,24 @@ namespace Or.Micro.Products
         public void ConfigureServices(IServiceCollection services)
         {
 
-            // Register repositories for dependency injection
+            // Scoped
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IRepository<Product>, ProductRepository>();
-            services.AddDbContext<RetailContext>(opt => opt.UseInMemoryDatabase("RetailDB").EnableSensitiveDataLogging());
+
+            // Transient
             services.AddTransient<IDbInitializer, DbInitializer>();
+
+            // Singleton
+            services.AddSingleton(RabbitHutch.CreateBus("host=rabbitmq;username=guest;password=guest"));
+
+
+            // DB context
+            services.AddDbContext<ProductContext>(opt => opt.UseInMemoryDatabase("ProductDB").EnableSensitiveDataLogging());
+
+            // Hosted Services
+            services.AddHostedService<ProductListener>();
+
+            // Controllers Etc.
             services.AddControllers().AddNewtonsoftJson(x =>
                 x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
@@ -43,7 +58,7 @@ namespace Or.Micro.Products
                 using (var scope = app.ApplicationServices.CreateScope())
                 {
                     var sp = scope.ServiceProvider;
-                    var dbContext = sp.GetService<RetailContext>();
+                    var dbContext = sp.GetService<ProductContext>();
                     var dbInitializer = sp.GetService<IDbInitializer>();
                     dbInitializer.Initialize(dbContext);
                 }

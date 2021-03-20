@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Or.Domain.Model.Entities;
 using Or.Domain.Model.ServiceFacades;
-using Or.Domain.Storage;
+using Or.Micro.Customers.Data;
+using Or.Micro.Customers.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,9 +9,9 @@ namespace Or.Micro.Customers.Repositories
 {
     public class CustomerRepository : IRepository<Customer>
     {
-        private readonly RetailContext _ctx;
+        private readonly CustomerContext _ctx;
 
-        public CustomerRepository(RetailContext ctx)
+        public CustomerRepository(CustomerContext ctx)
         {
             _ctx = ctx;
         }

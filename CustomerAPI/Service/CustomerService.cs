@@ -1,5 +1,5 @@
-﻿using Or.Domain.Model.Entities;
-using Or.Domain.Model.ServiceFacades;
+﻿using Or.Domain.Model.ServiceFacades;
+using Or.Micro.Customers.Models;
 using System.Threading.Tasks;
 
 namespace Or.Micro.Customers.Service

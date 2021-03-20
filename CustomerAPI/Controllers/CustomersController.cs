@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Or.Domain.Model.Entities;
-using Or.Domain.Model.ServiceFacades;
+using Or.Micro.Customers.Models;
+using Or.Micro.Customers.Service;
 using System.Threading.Tasks;
 
 namespace Or.Micro.Customers.Controllers

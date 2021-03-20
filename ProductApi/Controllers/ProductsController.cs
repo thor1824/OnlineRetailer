@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Or.Domain.Model.ServiceFacades;
+using Or.Micro.Products.Services;
 using System.Threading.Tasks;
 
 namespace Or.Micro.Products.Controllers
